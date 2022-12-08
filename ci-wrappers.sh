@@ -271,9 +271,9 @@ docker run -d --restart always \
   -v /var/run/docker.sock:/var/run/docker.sock \
  -v "${workdir}":"${workdir}" \
   myoung34/github-runner:latest
-  #  -e RUNNER_GROUP="my-group" \
   -e RUNNER_SCOPE="org" \
   -e ORG_NAME="${GITHUBORG}" \
 #  -e DISABLE_AUTO_UPDATE="true" \
 #-e LABELS="my-label,other-label" \
+  #  -e RUNNER_GROUP="my-group" \
 )
