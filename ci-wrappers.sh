@@ -246,7 +246,7 @@ _generate_and_install_new_deploy_key() (
 
 # runner name
 github-runner-repo() (
-local workdir="$(mktemp --directory /tmp/ghrunner-${1}.XXXXXX)"
+local workdir="$(mktemp --directory /tmp/ghrunner-${GITHUBORG}-${PWD##*/}.XXXXXX)"
 docker run -d --restart always \
   -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
   -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
@@ -262,7 +262,7 @@ docker run -d --restart always \
 )
 
 github-runner-org() (
-local workdir="$(mktemp --directory /tmp/ghrunner-${1}.XXXXXX)"
+local workdir="$(mktemp --directory /tmp/ghrunner-org.XXXXXX)"
 docker run -d --restart always \
   -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
   -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
