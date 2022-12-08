@@ -245,7 +245,7 @@ _generate_and_install_new_deploy_key() (
 )
 
 # runner name
-github-runner() {
+github-runner-repo() (
 local workdir="$(mktemp --directory /tmp/ghrunner-${1}.XXXXXX)"
 docker run -d --restart always \
   -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
@@ -256,9 +256,24 @@ docker run -d --restart always \
  -v "${workdir}":"${workdir}" \
   myoung34/github-runner:latest
   #  -e RUNNER_GROUP="my-group" \
-#  -e RUNNER_SCOPE="org" \
 #  -e DISABLE_AUTO_UPDATE="true" \
 #  -e ORG_NAME="${GITHUBORG}" \
 #-e LABELS="my-label,other-label" \
+)
 
-}
+github-runner-org() (
+local workdir="$(mktemp --directory /tmp/ghrunner-${1}.XXXXXX)"
+docker run -d --restart always \
+  -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
+  -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
+  -e ACCESS_TOKEN=${GITHUBTOKEN} \
+  -e RUNNER_WORKDIR="${workdir}" \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+ -v "${workdir}":"${workdir}" \
+  myoung34/github-runner:latest
+  #  -e RUNNER_GROUP="my-group" \
+  -e RUNNER_SCOPE="org" \
+  -e ORG_NAME="${GITHUBORG}" \
+#  -e DISABLE_AUTO_UPDATE="true" \
+#-e LABELS="my-label,other-label" \
+)
