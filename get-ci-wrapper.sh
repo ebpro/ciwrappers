@@ -24,5 +24,8 @@ END
 # Creates a default config files.
 _create_config
 
+# Load the config
+source "${HOME}/.ci-wrappers/config"
+
 # Installs the script locally
 curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/ci-wrappers.sh > "$CI_WRAPPERS_HOME"/ci-wrappers.sh
