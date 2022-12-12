@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 _create_config() (
+  echo HOME: "${HOME}"
   # Create or update default config file
   mkdir -p "${HOME}/.ci-wrappers/"
   cat >!"${HOME}/.ci-wrappers/config" <<END
