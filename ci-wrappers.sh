@@ -7,9 +7,17 @@ _init() {
   source "${HOME}/.ci-wrappers/config"
 }
 
+var_expand() {
+  if [ -z "${1-}" ] || [ $# -ne 1 ]; then
+    printf 'var_expand: expected one argument\n' >&2;
+    return 1;
+  fi
+  eval printf '%s' "\"\${$1?}\""
+}
+
 ci-wrappers-usage() {
-  printf 'install-dockerclient-vagrant-terraform\n\t installs a docker client, vagant and terraform in %s/bin\n'"${HOME}"
-  printf "new-java-project [projectname]\n\t create a new java+maven project ready for CI\n"
+  printf 'install-ci-software\n\t installs a docker client and compose plugin, Github CLI, vagrant and terraform in %s/bin\n'"${CI_WRAPPERS_HOME}"
+  printf "new-java-project [projectname] [groupid]\n\t create a new java+maven project ready for CI\n"
   echo "docker-wrapper"
   echo "docker-wrapper-build"
   echo "docker-wrapper-build-all"
@@ -90,14 +98,13 @@ _moveVBoxDefaultFolder() {
 }
 
 _check_needed_variables() {
-  _check_variables GITHUBLOGIN GITHUBTOKEN GITHUB_ORG SONAR_URL SONAR_TOKEN
+  _check_variables GITHUBLOGIN GITHUBTOKEN GITHUBORG SONAR_URL SONAR_TOKEN
 }
 
 _check_variables() {
-  if [ -n "$ZSH_VERSION" ]; then emulate -L ksh; fi
   for varname in "$@"; do
-    v="${!varname}"
-    if [ ! -n "${v-unset}" ]; then
+    v=$(var_expand "$varname")
+    if [ -z "${v-unset}" ]; then
       echo "$varname is not set: exiting"
       exit 1
     fi
@@ -106,7 +113,8 @@ _check_variables() {
 
 # This utility function computes the image name and tag from the project directory and the git branch.
 _docker_env() {
-  DOCKER_REPO_NAME=${GITHUB_ORG}
+  _check_variables GITHUBORG
+  DOCKER_REPO_NAME=${GITHUBORG}
   IMAGE_NAME=$(echo "${PWD##*/}" | tr '[:upper:]' '[:lower:]')
   IMAGE_TAG=$(git rev-parse --abbrev-ref HEAD)
   DOCKER_TARGET=${DOCKER_TARGET:-finalJLinkAlpine}
