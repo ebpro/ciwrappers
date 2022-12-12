@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CI_WRAPPERS_HOME="\${CI_WRAPPERS_HOME:-\${HOME}/.ci-wrappers}"
+CI_WRAPPERS_HOME="${CI_WRAPPERS_HOME:-${HOME}/.ci-wrappers}"
 
 _create_config() (
   # Create or update default config file
