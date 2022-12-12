@@ -5,6 +5,7 @@ _E_TITLE='\033[0;0m'
 
 _init() {
   source "${HOME}/.ci-wrappers/config"
+  CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
 }
 
 var_expand() {
@@ -88,7 +89,6 @@ install-ci-software() {
 provision-docker-engine() {
   _init
   # _check_variables VAGRANT_HTTP_PROXY VAGRANT_HTTPS_PROXY VAGRANT_NO_PROXY
-  CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
   echo "Docker Vagrant Home: ${CI_DOCKER_ENGINE_HOME}"
   if [ ! -d "${CI_DOCKER_ENGINE_HOME}" ]; then
     git clone -q https://github.com/ebpro/VagrantDockerProvisioningUsage.git "${CI_DOCKER_ENGINE_HOME}" &&
@@ -102,7 +102,7 @@ provision-docker-engine() {
 
 docker-vagrant() {
   _init
-  CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
+  [[ ! -d "${CI_DOCKER_ENGINE_HOME}" ]] { echo "Vagrant Docker not provisioned run : provision-docker-engine"; exit 0; }
   CI_DOCKER_ENGINE_ID=$(vagrant global-status|grep "$CI_DOCKER_ENGINE_HOME"|cut -d ' ' -f 1)
   # shellcheck disable=SC2068
   vagrant $@ "$CI_DOCKER_ENGINE_ID"
