@@ -34,4 +34,4 @@ echo "Installs the scripts"
 curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/ci-wrappers.sh > "$CI_WRAPPERS_HOME"/ci-wrappers.sh
 
 printf "\nto activate :\n\t source $CI_WRAPPERS_HOME/ci-wrappers.sh\n\n"
-printf "or add to .zshrc or .bashrc : \n\texport CI_WRAPPERS_HOME=${CI_WRAPPERS_HOME} [[ -f \"\${CI_WRAPPERS_HOME}/ci-wrappers.sh\" ]] && source \"\${CI_WRAPPERS_HOME}/ci-wrappers.sh\n"
+printf "or add to .zshrc or .bashrc : \n\texport CI_WRAPPERS_HOME=${CI_WRAPPERS_HOME} [[ -f \"\${CI_WRAPPERS_HOME}/ci-wrappers.sh\" ]] && source \"\${CI_WRAPPERS_HOME}/ci-wrappers.sh\"\n"
