@@ -3,30 +3,7 @@
 _B_TITLE='\033[0;33m'
 _E_TITLE='\033[0;0m'
 
-_create_config() (
-  # Create or update default config file
-  mkdir -p "${HOME}/.ci-wrappers/"
-  cat >!"${HOME}/.ci-wrappers/config" <<END
-CI_VAGRANT_VERSION=2.3.4
-CI_TERRAFORM_VERSION=1.3.6
-CI_DOCKER_CLIENT_VERSION=20.10.19
-CI_DOCKER_COMPOSE_VERSION=2.13.0
-CI_GH_CLI_VERSION=2.20.2
-
-CI_MAVEN_DEFAULT_IMAGE="brunoe/maven:3.8.6-eclipse-temurin-17"
-CI_JAVA_DEFAULT_ARCHETYPE_GROUPID="fr.univtln.bruno.demos.archetypes"
-CI_JAVA_DEFAULT_ARCHETYPE_ARTIFACTID="demomavenarchetype"
-CI_JAVA_DEFAULT_ARCHETYPE_VERSION="1.1-SNAPSHOT"
-
-export CI_WRAPPERS_HOME="\${CI_WRAPPERS_HOME:-\${HOME}/.ci-wrappers}"
-export DOCKER_CONFIG="\$CI_WRAPPERS_HOME/.docker"
-END
-)
-
-_create_config
-
 _init() {
-  _create_config
   source "${HOME}/.ci-wrappers/config"
 }
 
