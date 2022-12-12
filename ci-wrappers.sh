@@ -90,16 +90,29 @@ provision-docker-engine() {
   # _check_variables VAGRANT_HTTP_PROXY VAGRANT_HTTPS_PROXY VAGRANT_NO_PROXY
   CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
   echo "Docker Vagrant Home: ${CI_DOCKER_ENGINE_HOME}"
-  if [ ! -f "${CI_DOCKER_ENGINE_HOME}" ]; then
-    git clone https://github.com/ebpro/VagrantDockerProvisioningUsage.git "${CI_DOCKER_ENGINE_HOME}"
+  if [ ! -d "${CI_DOCKER_ENGINE_HOME}" ]; then
+    git clone -q https://github.com/ebpro/VagrantDockerProvisioningUsage.git "${CI_DOCKER_ENGINE_HOME}" &&
+      cd "${CI_DOCKER_ENGINE_HOME}"
+  else
+    cd "${CI_DOCKER_ENGINE_HOME}" &&
+    git pull -q
   fi
-  cd "${CI_DOCKER_ENGINE_HOME}" && vagrant up
+  vagrant up
+}
+
+docker-vagrant() {
+  _init
+  CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
+  CI_DOCKER_ENGINE_ID=$(vagrant global-status|grep "$CI_DOCKER_ENGINE_HOME"|cut -d ' ' -f 1)
+  # shellcheck disable=SC2068
+  vagrant $@ "$CI_DOCKER_ENGINE_ID"
 }
 
 use-vagrant-docker() {
-  VAGRANT_dockerNode1Path=$(vagrant global-status | grep ${1:-docker-node} | grep "running" | head -n 1 | cut -f 6 -d ' ')
-  [[ -f "$VAGRANT_dockerNode1Path/set-docker-env.sh" ]] &&
-    cd "${VAGRANT_dockerNode1Path}" &&
+  _init
+  CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
+  [[ -f "$CI_DOCKER_ENGINE_HOME/set-docker-env.sh" ]] &&
+    cd "${CI_DOCKER_ENGINE_HOME}" &&
     . ./set-docker-env.sh
 }
 
