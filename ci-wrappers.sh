@@ -95,15 +95,15 @@ provision-docker-engine() {
       cd "${CI_DOCKER_ENGINE_HOME}"
   else
     cd "${CI_DOCKER_ENGINE_HOME}" &&
-    git pull -q
+      git pull -q
   fi
   vagrant up
 }
 
 docker-vagrant() {
   _init
-  [[ ! -d "${CI_DOCKER_ENGINE_HOME}" ]] { echo "Vagrant Docker not provisioned run : provision-docker-engine"; exit 0; }
-  CI_DOCKER_ENGINE_ID=$(vagrant global-status|grep "$CI_DOCKER_ENGINE_HOME"|cut -d ' ' -f 1)
+  [[ ! -d "${CI_DOCKER_ENGINE_HOME}" ]] && echo "Vagrant Docker not provisioned run : provision-docker-engine" && exit 0
+  CI_DOCKER_ENGINE_ID=$(vagrant global-status | grep "$CI_DOCKER_ENGINE_HOME" | cut -d ' ' -f 1)
   # shellcheck disable=SC2068
   vagrant $@ "$CI_DOCKER_ENGINE_ID"
 }
