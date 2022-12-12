@@ -9,8 +9,8 @@ _init() {
 
 var_expand() {
   if [ -z "${1-}" ] || [ $# -ne 1 ]; then
-    printf 'var_expand: expected one argument\n' >&2;
-    return 1;
+    printf 'var_expand: expected one argument\n' >&2
+    return 1
   fi
   eval printf '%s' "\"\${$1?}\""
 }
@@ -86,7 +86,21 @@ install-ci-software() {
 }
 
 provision-docker-engine() {
-  _check_variables VAGRANT_HTTP_PROXY VAGRANT_HTTPS_PROXY VAGRANT_NO_PROXY
+  _init
+  # _check_variables VAGRANT_HTTP_PROXY VAGRANT_HTTPS_PROXY VAGRANT_NO_PROXY
+  CI_DOCKER_ENGINE_HOME="${CI_WRAPPERS_HOME}/vagrant-docker-engine"
+  echo "Docker Vagrant Home: ${CI_DOCKER_ENGINE_HOME}"
+  if [ ! -f "${CI_DOCKER_ENGINE_HOME}" ]; then
+    git clone https://github.com/ebpro/VagrantDockerProvisioningUsage.git "${CI_DOCKER_ENGINE_HOME}"
+  fi
+  cd "${CI_DOCKER_ENGINE_HOME}" && vagrant up
+}
+
+use-vagrant-docker() {
+  VAGRANT_dockerNode1Path=$(vagrant global-status | grep ${1:-docker-node} | grep "running" | head -n 1 | cut -f 6 -d ' ')
+  [[ -f "$VAGRANT_dockerNode1Path/set-docker-env.sh" ]] &&
+    cd "${VAGRANT_dockerNode1Path}" &&
+    . ./set-docker-env.sh
 }
 
 _moveVBoxDefaultFolder() {
