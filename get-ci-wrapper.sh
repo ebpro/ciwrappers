@@ -30,3 +30,6 @@ source "${CI_WRAPPERS_HOME}/config"
 
 # Installs the script locally
 curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/ci-wrappers.sh > "$CI_WRAPPERS_HOME"/ci-wrappers.sh
+
+echo "to activate :\n\t source $CI_WRAPPERS_HOME/ci-wrappers.sh"
+echo "or add to .zshrc or .bashrc : \nexport CI_WRAPPERS_HOME=${CI_WRAPPERS_HOME} [[ -f "\${CI_WRAPPERS_HOME}/ci-wrappers.sh" ]] && source "\${CI_WRAPPERS_HOME}/ci-wrappers.sh"
