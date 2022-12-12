@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
+CI_WRAPPERS_HOME="\${CI_WRAPPERS_HOME:-\${HOME}/.ci-wrappers}"
+
 _create_config() (
-  echo HOME: "${HOME}"
   # Create or update default config file
-  mkdir -p "${HOME}/.ci-wrappers/"
-  cat >"${HOME}/.ci-wrappers/config" <<END
+  mkdir -p "${CI_WRAPPERS_HOME}"
+  cat >"${CI_WRAPPERS_HOME}/config" <<END
 CI_VAGRANT_VERSION=2.3.4
 CI_TERRAFORM_VERSION=1.3.6
 CI_DOCKER_CLIENT_VERSION=20.10.19
@@ -25,7 +26,7 @@ END
 _create_config
 
 # Load the config
-source "${HOME}/.ci-wrappers/config"
+source "${CI_WRAPPERS_HOME}/config"
 
 # Installs the script locally
 curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/ci-wrappers.sh > "$CI_WRAPPERS_HOME"/ci-wrappers.sh
