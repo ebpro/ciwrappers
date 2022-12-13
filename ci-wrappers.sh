@@ -296,7 +296,7 @@ github-runner-repo() (
   _check_variables GITHUBORG
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_${PWD##*/}_XXXXXX")
-  docker run -d --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
+  docker run -d --rm --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
     -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
     -e ACCESS_TOKEN="${GITHUBTOKEN}" \
     -e RUNNER_SCOPE="repo" \
@@ -312,7 +312,7 @@ github-runner-org() (
   _check_variables GITHUBORG
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_XXXXXX")
-  docker run -d --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
+  docker run -d --rm --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
     -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
     -e ACCESS_TOKEN="${GITHUBTOKEN}" \
     -e RUNNER_SCOPE="org" \
@@ -322,4 +322,8 @@ github-runner-org() (
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "${workdir}":"${workdir}" \
     myoung34/github-runner:latest
+)
+
+github-runner-remove-all() (
+ docker rm $(docker ps -a|grep myoung34/github-runner|cut -f 1 -d ' ')
 )
