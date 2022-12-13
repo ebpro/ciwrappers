@@ -327,3 +327,7 @@ github-runner-org() (
 github-runner-remove-all() (
  docker rm $(docker ps -a|grep myoung34/github-runner|cut -f 1 -d ' ')
 )
+
+ci-wrappers-upgrade() (
+ curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/get-ci-wrapper.sh | bash
+)
