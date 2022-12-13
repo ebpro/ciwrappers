@@ -17,7 +17,7 @@ var_expand() {
 }
 
 ci-wrappers-usage() {
-  printf 'install-ci-software\n\t installs a docker client and compose plugin, Github CLI, vagrant and terraform in %s/bin\n'"${CI_WRAPPERS_HOME}"
+  printf 'ci-install-software\n\t installs a docker client and compose plugin, Github CLI, vagrant and terraform in %s/bin\n'"${CI_WRAPPERS_HOME}"
   printf "new-java-project [projectname] [groupid]\n\t create a new java+maven project ready for CI\n"
   echo "docker-wrapper"
   echo "docker-wrapper-build"
@@ -27,7 +27,7 @@ ci-wrappers-usage() {
   echo "docker-sonar-analysis"
 }
 
-install-ci-software() {
+ci-install-software() {
   _init
 
   if [ -n "$ZSH_VERSION" ]; then emulate -L ksh; fi
@@ -292,11 +292,11 @@ _generate_and_install_new_deploy_key() (
 )
 
 # create a github hosted runner in a container for the current repo
-github-runner-repo() (
+ci-github-runner-repo() (
   _check_variables GITHUBORG
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_${PWD##*/}_XXXXXX")
-  docker run -d --rm --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
+  docker run -d --rm --restart unless-stopped --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
     -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
     -e ACCESS_TOKEN="${GITHUBTOKEN}" \
     -e RUNNER_SCOPE="repo" \
@@ -308,11 +308,11 @@ github-runner-repo() (
 )
 
 # create a github hosted runner in a container for the org in $GITHUBORG
-github-runner-org() (
+ci-github-runner-org() (
   _check_variables GITHUBORG
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_XXXXXX")
-  docker run -d --rm --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
+  docker run -d --rm --restart unless-stopped --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
     -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
     -e ACCESS_TOKEN="${GITHUBTOKEN}" \
     -e RUNNER_SCOPE="org" \
@@ -324,7 +324,7 @@ github-runner-org() (
     myoung34/github-runner:latest
 )
 
-github-runner-remove-all() (
+ci-github-runner-remove-all() (
  docker rm $(docker ps -a|grep myoung34/github-runner|cut -f 1 -d ' ')
 )
 

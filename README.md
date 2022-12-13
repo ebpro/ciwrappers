@@ -26,14 +26,14 @@ export CI_WRAPPER_HOME=${HOME}/.ci-wrappers
 
 ## Usage
 
-- `install-ci-software` <br/>
+- `ci-install-software` <br/>
   Installs GitHub CLI, Docker client, docker compose plugin, vagrant and terraform in $CI_WRAPPERS_HOME
 - `new-java-project testci fr.univtln.bruno.tests` <br/>
   Creates a new maven projects ready for C.I.
 - `docker-mvn` <br/>
   Wraps maven in a container (docker needed see beelow).<br/>
   For example to build a C.I. project: `docker-mvn clean verify`
-- `github-runner-repo` or `github-runner-org` <br/>
+- `ci-github-runner-repo` or `ci-github-runner-org` <br/>
   Creates and register a new GitHub runner in a docker container for the current repository
   or the organisation (account).
 - A docker engine with http proxy support in VM :
