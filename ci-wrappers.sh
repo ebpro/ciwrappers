@@ -263,7 +263,7 @@ new-java-project() (
   fi
 
   _init
-  _check_commands mvn java javac git git-flow gh ssh-keygen
+  _check_commands mvn java javac git /usr/lib/git-core/git-flow gh ssh-keygen
 
   PROJECT_NAME=$(echo "$1" | tr '[:upper:]' '[:lower:]')
   GROUP_ID=$(echo "$2" | tr '[:upper:]' '[:lower:]')
