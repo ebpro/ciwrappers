@@ -88,6 +88,7 @@ ci-install-software() {
 
 provision-docker-engine() {
   _init
+  _check_commands vagrant virtualbox
   # _check_variables VAGRANT_HTTP_PROXY VAGRANT_HTTPS_PROXY VAGRANT_NO_PROXY
   echo "Docker Vagrant Home: ${CI_DOCKER_ENGINE_HOME}"
   if [ ! -d "${CI_DOCKER_ENGINE_HOME}" ]; then
@@ -102,6 +103,7 @@ provision-docker-engine() {
 
 docker-vagrant() {
   _init
+  _check_commands vagrant
   [[ ! -d "${CI_DOCKER_ENGINE_HOME}" ]] && echo "Vagrant Docker not provisioned run : provision-docker-engine" && exit 0
   CI_DOCKER_ENGINE_ID=$(vagrant global-status | grep "$CI_DOCKER_ENGINE_HOME" | cut -d ' ' -f 1)
   # shellcheck disable=SC2068
@@ -138,6 +140,15 @@ _check_variables() {
   done
 }
 
+_check_commands() {
+  for commandName in "$@"; do
+    if ! command -v "$commandName" &>/dev/null; then
+      echo "$commandName not found. Please install it"
+      exit 1
+    fi
+  done
+}
+
 # This utility function computes the image name and tag from the project directory and the git branch.
 _docker_env() {
   _check_variables GITHUBORG
@@ -148,7 +159,7 @@ _docker_env() {
   DOCKER_FULL_IMAGE_NAME="$DOCKER_REPO_NAME/$IMAGE_NAME:$IMAGE_TAG-$DOCKER_TARGET"
 }
 
-# This utility function look for final target in the docker file and compute docker image name and tag (oen by line).
+# This utility function look for final target in the docker file and compute docker image name and tag (one by line).
 _docker-wrapper-all-images() (
   for finalTarget in $(grep -E 'FROM.*final.*' docker/Dockerfile | tr -s ' ' | cut -f 4 -d ' '); do
     DOCKER_TARGET="$finalTarget" _docker_env
@@ -159,6 +170,7 @@ _docker-wrapper-all-images() (
 # This function is a wrapper around the docker command to passes the env (credentials, image names, ...)
 docker-wrapper() (
   _docker_env
+  _check_commands docker
   DOCKER_BUILDKIT=1 \
     docker "$1" \
     --file docker/Dockerfile \
@@ -194,6 +206,7 @@ docker-wrapper-build-all() (
 # Runs a target image ($DOCKER_TARGET)
 docker-wrapper-run() (
   _docker_env
+  _check_commands docker
   echo "Running ${DOCKER_FULL_IMAGE_NAME}"
   docker run --rm -it "${DOCKER_FULL_IMAGE_NAME}"
 )
@@ -210,6 +223,7 @@ docker-wrapper-run-all() (
 # see https://github.com/ebpro/docker-maven
 docker-mvn() (
   _docker_env
+  _check_commands docker
   docker run \
     --env IMAGE_NAME="$IMAGE_NAME" \
     --env GITHUB_LOGIN="$GITHUBLOGIN" \
@@ -249,6 +263,7 @@ new-java-project() (
   fi
 
   _init
+  _check_commands mvn java javac git git-flow gh ssh-keygen
 
   PROJECT_NAME=$(echo "$1" | tr '[:upper:]' '[:lower:]')
   GROUP_ID=$(echo "$2" | tr '[:upper:]' '[:lower:]')
@@ -294,6 +309,7 @@ _generate_and_install_new_deploy_key() (
 # create a github hosted runner in a container for the current repo
 ci-github-runner-repo() (
   _check_variables GITHUBORG
+  _check_commands docker
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_${PWD##*/}_XXXXXX")
   docker run -d --restart unless-stopped --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
@@ -310,6 +326,7 @@ ci-github-runner-repo() (
 # create a github hosted runner in a container for the org in $GITHUBORG
 ci-github-runner-org() (
   _check_variables GITHUBORG
+  _check_commands docker
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_XXXXXX")
   docker run -d --restart unless-stopped --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
@@ -325,9 +342,11 @@ ci-github-runner-org() (
 )
 
 ci-github-runner-remove-all() (
- docker rm $(docker ps -a|grep myoung34/github-runner|cut -f 1 -d ' ')
+  _check_commands docker
+  docker rm $(docker ps -a | grep myoung34/github-runner | cut -f 1 -d ' ')
 )
 
 ci-wrappers-upgrade() (
- curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/get-ci-wrapper.sh | bash
+  _check_commands curl bash
+  curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/get-ci-wrapper.sh | bash
 )
