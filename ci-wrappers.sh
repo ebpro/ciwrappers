@@ -293,12 +293,14 @@ _generate_and_install_new_deploy_key() (
 
 # create a github hosted runner in a container for the current repo
 github-runner-repo() (
+  _check_variables GITHUBORG
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_${PWD##*/}_XXXXXX")
   docker run -d --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
-    -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
     -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
     -e ACCESS_TOKEN="${GITHUBTOKEN}" \
+    -e RUNNER_SCOPE="repo" \
+    -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
     -e RUNNER_WORKDIR="${workdir}" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "${workdir}":"${workdir}" \
@@ -307,16 +309,17 @@ github-runner-repo() (
 
 # create a github hosted runner in a container for the org in $GITHUBORG
 github-runner-org() (
+  _check_variables GITHUBORG
   local workdir
   workdir=$(mktemp --directory "/tmp/ghrunner-${GITHUBORG}_XXXXXX")
   docker run -d --restart always --name ghrunner_$(echo "$workdir" | cut -d '-' -f 2) \
-    -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
     -e RUNNER_NAME_PREFIX="${GITHUBORG}-${PWD##*/}-runner" \
     -e ACCESS_TOKEN="${GITHUBTOKEN}" \
+    -e RUNNER_SCOPE="org" \
+    -e ORG_NAME="${GITHUBORG}" \
+    -e REPO_URL="https://github.com/${GITHUBORG}/${PWD##*/}" \
     -e RUNNER_WORKDIR="${workdir}" \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v "${workdir}":"${workdir}" \
-    -e RUNNER_SCOPE="org" \
-    -e ORG_NAME="${GITHUBORG}" \
     myoung34/github-runner:latest
 )
