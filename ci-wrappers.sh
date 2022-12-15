@@ -222,16 +222,7 @@ docker-wrapper-run-all() (
 # Runs maven in a container as the user
 # see https://github.com/ebpro/docker-maven
 docker-mvn() (
-  _docker_env
-  _check_commands docker
-  docker run \
-    --env IMAGE_NAME="$IMAGE_NAME" \
-    --env GITHUB_LOGIN="$GITHUBLOGIN" \
-    --env GITHUB_TOKEN="$GITHUBTOKEN" \
-    --env SONAR_URL="$SONAR_URL" \
-    --env SONAR_TOKEN="$SONAR_TOKEN" \
-    --env SONAR_URL="$SONAR_URL" \
-    --env SONAR_TOKEN="$SONAR_TOKEN" \
+  docker run --rm -it \
     --env S6_LOGGING=1 \
     --env S6_BEHAVIOUR_IF_STAGE2_FAILS \
     --volume "${HOME}/.m2":"/home/user/.m2" \
@@ -239,16 +230,19 @@ docker-mvn() (
     --volume "${HOME}/.gitconfig":"/home/user/.gitconfig" \
     --volume "$(pwd)":"/usr/src/mymaven" \
     --workdir /usr/src/mymaven \
-    --rm \
     --env PUID="$(id -u)" -e PGID="$(id -g)" \
     --env MAVEN_CONFIG=/home/user/.m2 \
-    "${MAVEN_IMAGE:-${CI_MAVEN_DEFAULT_IMAGE}}" \
+    "${MAVEN_IMAGE:-"brunoe/maven"}" \
     runuser --user user \
     --group user \
     -- mvn --errors --threads 1C --color always --strict-checksums \
     -Duser.home=/home/user \
-    --settings /usr/src/mymaven/docker/ci-settings.xml "$@"
+    "$@"
 )
+docker-mvn-8() (MAVEN_IMAGE=brunoe/maven:8 docker-mvn $@)
+docker-mvn-11() (MAVEN_IMAGE=brunoe/maven:11 docker-mvn $@)
+docker-mvn-17() (MAVEN_IMAGE=brunoe/maven:17 docker-mvn $@)
+docker-mvn-19() (MAVEN_IMAGE=brunoe/maven:19 docker-mvn $@)
 
 docker-sonar-analysis() (
   docker-mvn -P jacoco,sonar \
