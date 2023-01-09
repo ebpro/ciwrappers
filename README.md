@@ -7,7 +7,7 @@ A sets a utility bash functions for Continuous Integration C.I.
 Install with :
 
 ```bash
-curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/ci-wrappers.sh | bash
+curl -s https://raw.githubusercontent.com/ebpro/ciwrappers/develop/get-ci-wrapper.sh | bash
 ```
 
 To use it in the current shell :
