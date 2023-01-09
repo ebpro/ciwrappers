@@ -33,6 +33,7 @@ export CI_WRAPPER_HOME=${HOME}/.ci-wrappers
 ### Setup docker
 
   - if you have an http proxy :
+    - YOU PASSWORD CAN'T CONTAINS CARACTERS FORBIDDEN IN URL
     - sets the needed variables `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`
     - and adds the variables `VAGRANT_HTTP_PROXY`, `VAGRANT_HTTPS_PROXY` and `VAGRANT_NO_PROXY`
     - install the vagrant plugin for proxies : <br/>
