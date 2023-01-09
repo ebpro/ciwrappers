@@ -21,7 +21,8 @@ You can add it to .bashrc or .zshrc :
 ```bash
 export CI_WRAPPER_HOME=${HOME}/.ci-wrappers
 [[ -f "${CI_WRAPPER_HOME}/ci-wrappers.sh" ]] && \
-  source "${CI_WRAPPER_HOME}/ci-wrappers.sh"
+  source "${CI_WRAPPER_HOME}/ci-wrappers.sh" && \
+  export PATH="${CI_WRAPPER_HOME}/PATH:$PATH"
 ```
 
 ## Usage
