@@ -91,6 +91,8 @@ provision-docker-engine() {
   _check_commands vagrant virtualbox
   # _check_variables VAGRANT_HTTP_PROXY VAGRANT_HTTPS_PROXY VAGRANT_NO_PROXY
   echo "Docker Vagrant Home: ${CI_DOCKER_ENGINE_HOME}"
+  _move_vbox_default_folder
+  _proxy_check
   if [ ! -d "${CI_DOCKER_ENGINE_HOME}" ]; then
     git clone -q https://github.com/ebpro/VagrantDockerProvisioningUsage.git "${CI_DOCKER_ENGINE_HOME}" &&
       cd "${CI_DOCKER_ENGINE_HOME}"
@@ -98,6 +100,7 @@ provision-docker-engine() {
     cd "${CI_DOCKER_ENGINE_HOME}" &&
       git pull -q
   fi
+  
   vagrant up
 }
 
@@ -118,7 +121,7 @@ use-vagrant-docker() {
     . ./set-docker-env.sh
 }
 
-_moveVBoxDefaultFolder() {
+_move_vbox_default_folder() {
   targetDirectory=${1:-/scratch/${USER}}
   VBoxManage list systemproperties | grep "Current default machine folder:" &&
     mkdir -p "${targetDirectory}" &&
@@ -300,6 +303,11 @@ _generate_and_install_new_deploy_key() (
   rm -rf tmpKeydir
 )
 
+_proxy_check() {
+  if [ -n "$http_proxy" ] || [ -n "$https_proxy" ]; then
+  vagrant plugin install vagrant-proxyconf
+  fi
+}
 # create a github hosted runner in a container for the current repo
 ci-github-runner-repo() (
   _check_variables GITHUBORG
