@@ -29,15 +29,36 @@ export CI_WRAPPER_HOME=${HOME}/.ci-wrappers
 
   - `ci-install-software` <br/>
     Installs GitHub CLI, Docker client, docker compose plugin, vagrant and terraform in `$CI_WRAPPERS_HOME`
-    
-### Setup docker
+  - `provision-docker-engine` <br/> 
+    Installs docker in a vagrant VM.
+  - `use-vagrant-docker` <br/>
+    Set environment variables for Docker Client to use Docker Engine in the VM.
+ 
+### Java+Maven with Docker
+  
+  A sample docker command to generate a maven from a archetype in the current directory. Remember that the host home directory is mounted
+ /vagrant_data inthe VM and that bind mounts are done from the VM. 
+
+  ```bash
+  docker run --rm -it \
+        --volume "/vagrant_data/.m2":/root/.m2 \
+        --volume /vagrant_data$(echo $PWD|sed "s/$(echo $HOME|echo $HOME|sed 's/\//\\\//g')//"):/usr/src/mymaven \
+        --workdir /usr/src/mymaven maven \
+		mvn archetype:generate \
+   			-DarchetypeGroupId=fr.ebruno.maven.archetypes \
+			-DarchetypeArtifactId=maven-archetype-simple \
+   			-DarchetypeVersion=0.1.3 \
+   			-DgroupId=fr.univtln.bruno.samples \
+   			-DartifactId=MyAppHelloWorld \
+   			-Dversion=0.1.0-SNAPSHOT
+  ```
+
+### HTTP Proxy and wrappers
 
   - if you have an http proxy :
-    - YOU PASSWORD CAN'T CONTAINS CARACTERS FORBIDDEN IN URL
+    - YOUR PASSWORD CAN'T CONTAINS CARACTERS FORBIDDEN IN URL
     - sets the needed variables `HTTP_PROXY`, `HTTPS_PROXY` and `NO_PROXY`
     - and adds the variables `VAGRANT_HTTP_PROXY`, `VAGRANT_HTTPS_PROXY` and `VAGRANT_NO_PROXY`
-    - install the vagrant plugin for proxies : <br/>
-      `vagrant plugin install vagrant-proxyconf`
   - To install a docker engine with http proxy support in a Virtualbox VM with vagrant :
     - run `provision-docker-engine` once to create the VM
         - `docker-vagrant` is a wrapper for this specific Docker vagrant Box.
@@ -49,6 +70,7 @@ export CI_WRAPPER_HOME=${HOME}/.ci-wrappers
     - `use-vagrant-docker` sets $DOCKER_HOST for the docker client in the current shell.
     - to test `docker run --rm hello-world`
     - `vagrant destroy` to destroy the VM AND THE DATA.
+
 
 ### Continuous Integration (C.I.)
 
