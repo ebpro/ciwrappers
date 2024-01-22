@@ -125,7 +125,6 @@ _move_vbox_default_folder() {
   targetDirectory=${1:-/scratch/${USER}}
   if [ ! -d "/scratch" ]; then
 	echo "/scratch folder exists. Moving virtual machines folder if needed."
-  	VBoxManage list systemproperties | grep "Current default machine folder:" &&
     		mkdir -p "${targetDirectory}" &&
     			vboxmanage setproperty machinefolder "${targetDirectory}"/VirtualBox\ VMs &&
     				echo -n "New " && VBoxManage list systemproperties | grep "Default machine folder:"
